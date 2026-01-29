@@ -29,7 +29,7 @@ public class Gamer {
     private List<Preferencia> preferencias = new ArrayList<>();
 
     @OneToMany(mappedBy = "gamer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Noticia noticia;
+    private List<Noticia> noticias = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -39,13 +39,13 @@ public class Gamer {
     )
     private Set<Jogo> bibliotecaJogos = new HashSet<>(); // Usamos Set para evitar duplicatas
 
-    public Gamer(Long id, String nome, Conta conta, Cartao cartao, List<Preferencia> preferencias, Noticia noticia, Set<Jogo> bibliotecaJogos) {
+    public Gamer(Long id, String nome, Conta conta, Cartao cartao, List<Preferencia> preferencias, List<Noticia> noticias, Set<Jogo> bibliotecaJogos) {
         this.id = id;
         this.nome = nome;
         this.conta = conta;
         this.cartao = cartao;
         this.preferencias = preferencias;
-        this.noticia = noticia;
+        this.noticias = noticias;
         this.bibliotecaJogos = bibliotecaJogos;
     }
 
@@ -89,12 +89,12 @@ public class Gamer {
         this.preferencias = preferencias;
     }
 
-    public Noticia getNoticia() {
-        return noticia;
+    public List<Noticia> getNoticias() {
+        return noticias;
     }
 
-    public void setNoticia(Noticia noticia) {
-        this.noticia = noticia;
+    public void setNoticias(List<Noticia> noticias) {
+        this.noticias = noticias;
     }
 
     public Set<Jogo> getBibliotecaJogos() {
