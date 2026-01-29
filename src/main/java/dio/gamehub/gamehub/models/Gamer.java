@@ -3,7 +3,9 @@ package dio.gamehub.gamehub.models;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "gamers")
@@ -29,13 +31,22 @@ public class Gamer {
     @OneToMany(mappedBy = "gamer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Noticia noticia;
 
-    public Gamer(Long id, String nome, Conta conta, Cartao cartao, List<Preferencia> preferencias, Noticia noticia) {
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "gamer_jogo",
+            joinColumns = @JoinColumn(name = "gamer_id"),
+            inverseJoinColumns = @JoinColumn(name = "jogo_id")
+    )
+    private Set<Jogo> bibliotecaJogos = new HashSet<>(); // Usamos Set para evitar duplicatas
+
+    public Gamer(Long id, String nome, Conta conta, Cartao cartao, List<Preferencia> preferencias, Noticia noticia, Set<Jogo> bibliotecaJogos) {
         this.id = id;
         this.nome = nome;
         this.conta = conta;
         this.cartao = cartao;
         this.preferencias = preferencias;
         this.noticia = noticia;
+        this.bibliotecaJogos = bibliotecaJogos;
     }
 
     public Long getId() {
@@ -84,5 +95,13 @@ public class Gamer {
 
     public void setNoticia(Noticia noticia) {
         this.noticia = noticia;
+    }
+
+    public Set<Jogo> getBibliotecaJogos() {
+        return bibliotecaJogos;
+    }
+
+    public void setBibliotecaJogos(Set<Jogo> bibliotecaJogos) {
+        this.bibliotecaJogos = bibliotecaJogos;
     }
 }
