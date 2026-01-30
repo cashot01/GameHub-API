@@ -25,6 +25,9 @@ public class Gamer {
     )
     private Set<Jogo> bibliotecaJogos = new HashSet<>();
 
+    public Gamer() {
+    }
+
     public Gamer(Long id, String nome, Set<Jogo> bibliotecaJogos) {
         this.id = id;
         this.nome = nome;

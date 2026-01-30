@@ -1,5 +1,8 @@
 package dio.gamehub.api.controller;
 
+import dio.gamehub.api.dto.GamerCreateDTO;
+import dio.gamehub.api.dto.GamerResponseDTO;
+import dio.gamehub.api.dto.GamerUpdateDTO;
 import dio.gamehub.api.models.Gamer;
 import dio.gamehub.api.service.GamerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,32 +25,35 @@ public class GamerController {
     @Autowired
     private GamerService service;
 
-    @GetMapping
-    @Operation(summary = "Listar todos os gamers")
-    public ResponseEntity<List<Gamer>> getAll() {
-        return ok(service.findAll());
+    @PostMapping
+    @Operation(summary = "Criar novo gamer")
+    public ResponseEntity<GamerResponseDTO> create(@RequestBody GamerCreateDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar gamer por ID")
-    public ResponseEntity<Gamer> getById(@PathVariable Long id) {
-        Optional<Gamer> gamer = service.findById(id);
-        return gamer.map(ResponseEntity::ok).orElse(notFound().build());
+    public ResponseEntity<GamerResponseDTO> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(service.findById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping
-    @Operation(summary = "Criar novo gamer")
-    public ResponseEntity<Gamer> create(@RequestBody Gamer gamer) {
-        return status(HttpStatus.CREATED).body(service.save(gamer));
+    @GetMapping
+    @Operation(summary = "Listar todos os gamers")
+    public ResponseEntity<List<GamerResponseDTO>> getAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar gamer")
-    public ResponseEntity<Gamer> update(@PathVariable Long id, @RequestBody Gamer details) {
+    @Operation(summary = "Atualizar nome do gamer")
+    public ResponseEntity<GamerResponseDTO> update(@PathVariable Long id, @RequestBody GamerUpdateDTO dto) {
         try {
-            return ok(service.update(id, details));
+            return ResponseEntity.ok(service.updateNome(id, dto.getNome()));
         } catch (RuntimeException e) {
-            return notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -55,28 +61,28 @@ public class GamerController {
     @Operation(summary = "Deletar gamer")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (service.deleteById(id)) {
-            return noContent().build();
+            return ResponseEntity.noContent().build();
         }
-        return notFound().build();
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{gamerId}/biblioteca/{jogoId}")
     @Operation(summary = "Adicionar jogo à biblioteca do gamer")
-    public ResponseEntity<Gamer> adicionarJogo(@PathVariable Long gamerId, @PathVariable Long jogoId) {
+    public ResponseEntity<GamerResponseDTO> adicionarJogo(@PathVariable Long gamerId, @PathVariable Long jogoId) {
         try {
-            return ok(service.adicionarJogo(gamerId, jogoId));
+            return ResponseEntity.ok(service.adicionarJogo(gamerId, jogoId));
         } catch (RuntimeException e) {
-            return notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{gamerId}/biblioteca/{jogoId}")
     @Operation(summary = "Remover jogo da biblioteca do gamer")
-    public ResponseEntity<Gamer> removerJogo(@PathVariable Long gamerId, @PathVariable Long jogoId) {
+    public ResponseEntity<GamerResponseDTO> removerJogo(@PathVariable Long gamerId, @PathVariable Long jogoId) {
         try {
-            return ok(service.removerJogo(gamerId, jogoId));
+            return ResponseEntity.ok(service.removerJogo(gamerId, jogoId));
         } catch (RuntimeException e) {
-            return notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 }

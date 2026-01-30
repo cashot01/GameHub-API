@@ -1,13 +1,16 @@
 package dio.gamehub.api.service.impl;
 
+import dio.gamehub.api.dto.JogoDTO;
 import dio.gamehub.api.models.Jogo;
 import dio.gamehub.api.repository.JogoRepository;
 import dio.gamehub.api.service.JogoService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JogoServiceImpl implements JogoService {
@@ -15,35 +18,55 @@ public class JogoServiceImpl implements JogoService {
     @Autowired
     private JogoRepository jogoRepository;
 
-    @Override
-    public List<Jogo> findAll() {
-        return jogoRepository.findAll();
+    private JogoDTO toDTO(Jogo jogo) {
+        JogoDTO dto = new JogoDTO();
+        BeanUtils.copyProperties(jogo, dto);
+        return dto;
+    }
+
+    private Jogo toEntity(JogoDTO dto) {
+        Jogo jogo = new Jogo();
+        BeanUtils.copyProperties(dto, jogo);
+        return jogo;
     }
 
     @Override
-    public Optional<Jogo> findById(Long id) {
-        return jogoRepository.findById(id);
-    }
-
-    @Override
-    public Jogo save(Jogo jogo) {
+    public JogoDTO save(JogoDTO dto) {
+        Jogo jogo = toEntity(dto);
         jogo.setId(null);
-        return jogoRepository.save(jogo);
+        Jogo saved = jogoRepository.save(jogo);
+        return toDTO(saved);
     }
 
     @Override
-    public Jogo update(Long id, Jogo jogoDetails) {
-        Jogo existing = jogoRepository.findById(id)
+    public JogoDTO findById(Long id) {
+        Jogo jogo = jogoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Jogo não encontrado com ID: " + id));
-        existing.setTitulo(jogoDetails.getTitulo());
-        existing.setDescricao(jogoDetails.getDescricao());
-        existing.setPreco(jogoDetails.getPreco());
-        existing.setGenero(jogoDetails.getGenero());
-        existing.setDataLancamento(jogoDetails.getDataLancamento());
-        existing.setClassificacaoEtaria(jogoDetails.getClassificacaoEtaria());
-        existing.setDesenvolvedora(jogoDetails.getDesenvolvedora());
-        existing.setPlataformas(jogoDetails.getPlataformas());
-        return jogoRepository.save(existing);
+        return toDTO(jogo);
+    }
+
+    @Override
+    public List<JogoDTO> findAll() {
+        return jogoRepository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public JogoDTO update(Long id, JogoDTO dto) {
+        Jogo jogo = jogoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado com ID: " + id));
+        // Atualiza todos os campos
+        jogo.setTitulo(dto.getTitulo());
+        jogo.setDescricao(dto.getDescricao());
+        jogo.setPreco(dto.getPreco());
+        jogo.setGenero(dto.getGenero());
+        jogo.setDataLancamento(dto.getDataLancamento());
+        jogo.setClassificacaoEtaria(dto.getClassificacaoEtaria());
+        jogo.setDesenvolvedora(dto.getDesenvolvedora());
+        jogo.setPlataformas(dto.getPlataformas());
+        Jogo updated = jogoRepository.save(jogo);
+        return toDTO(updated);
     }
 
     @Override

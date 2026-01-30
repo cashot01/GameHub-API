@@ -1,16 +1,18 @@
 package dio.gamehub.api.service;
 
+import dio.gamehub.api.dto.GamerCreateDTO;
+import dio.gamehub.api.dto.GamerResponseDTO;
 import dio.gamehub.api.models.Gamer;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface GamerService {
-    List<Gamer> findAll();
-    Optional<Gamer> findById(Long id);
-    Gamer save(Gamer gamer);
-    Gamer update(Long id, Gamer gamerDetails);
+    GamerResponseDTO save(GamerCreateDTO dto);
+    GamerResponseDTO findById(Long id);
+    List<GamerResponseDTO> findAll();
+    GamerResponseDTO updateNome(Long id, String nome);
     boolean deleteById(Long id);
-    Gamer adicionarJogo(Long gamerId, Long jogoId);
-    Gamer removerJogo(Long gamerId, Long jogoId);
+    GamerResponseDTO adicionarJogo(Long gamerId, Long jogoId);
+    GamerResponseDTO removerJogo(Long gamerId, Long jogoId);
 }

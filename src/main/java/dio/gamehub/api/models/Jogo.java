@@ -39,6 +39,9 @@ public class Jogo {
     @Column
     private String plataformas; // ex: "PC, PlayStation 5, Xbox Series X"
 
+    public Jogo() {
+    }
+
     public Jogo(Long id, String titulo, String descricao, BigDecimal preco, String genero, LocalDate dataLancamento, String classificacaoEtaria, String desenvolvedora, String plataformas) {
         this.id = id;
         this.titulo = titulo;

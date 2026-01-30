@@ -1,5 +1,6 @@
 package dio.gamehub.api.controller;
 
+import dio.gamehub.api.dto.JogoDTO;
 import dio.gamehub.api.models.Jogo;
 import dio.gamehub.api.service.JogoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,32 +23,35 @@ public class JogoController {
     @Autowired
     private JogoService service;
 
-    @GetMapping
-    @Operation(summary = "Listar todos os jogos")
-    public ResponseEntity<List<Jogo>> getAll() {
-        return ok(service.findAll());
+    @PostMapping
+    @Operation(summary = "Criar novo jogo")
+    public ResponseEntity<JogoDTO> create(@RequestBody JogoDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar jogo por ID")
-    public ResponseEntity<Jogo> getById(@PathVariable Long id) {
-        Optional<Jogo> jogo = service.findById(id);
-        return jogo.map(ResponseEntity::ok).orElse(notFound().build());
+    public ResponseEntity<JogoDTO> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(service.findById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping
-    @Operation(summary = "Criar novo jogo")
-    public ResponseEntity<Jogo> create(@RequestBody Jogo jogo) {
-        return status(HttpStatus.CREATED).body(service.save(jogo));
+    @GetMapping
+    @Operation(summary = "Listar todos os jogos")
+    public ResponseEntity<List<JogoDTO>> getAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar jogo")
-    public ResponseEntity<Jogo> update(@PathVariable Long id, @RequestBody Jogo details) {
+    public ResponseEntity<JogoDTO> update(@PathVariable Long id, @RequestBody JogoDTO dto) {
         try {
-            return ok(service.update(id, details));
+            return ResponseEntity.ok(service.update(id, dto));
         } catch (RuntimeException e) {
-            return notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -55,8 +59,8 @@ public class JogoController {
     @Operation(summary = "Deletar jogo")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (service.deleteById(id)) {
-            return noContent().build();
+            return ResponseEntity.noContent().build();
         }
-        return notFound().build();
+        return ResponseEntity.notFound().build();
     }
 }
