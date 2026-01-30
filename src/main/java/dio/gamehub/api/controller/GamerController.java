@@ -12,82 +12,71 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.ResponseEntity.*;
+
 @RestController
 @RequestMapping("/api/gamers")
-@Tag(name = "Gamers", description = "Operações CRUD e gerenciamento de biblioteca de jogos para Gamers")
+@Tag(name = "Gamers", description = "Gerenciamento de jogadores e suas bibliotecas de jogos")
 public class GamerController {
 
     @Autowired
-    private GamerService gamerService;
+    private GamerService service;
 
     @GetMapping
-    @Operation(summary = "Listar todos os gamers", description = "Retorna uma lista com todos os gamers cadastrados.")
-    public ResponseEntity<List<Gamer>> getAllGamers() {
-        List<Gamer> gamers = gamerService.findAll();
-        return ResponseEntity.ok(gamers);
+    @Operation(summary = "Listar todos os gamers")
+    public ResponseEntity<List<Gamer>> getAll() {
+        return ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar gamer por ID", description = "Retorna os detalhes de um gamer específico com base no seu ID.")
-    public ResponseEntity<Gamer> getGamerById(@PathVariable Long id) {
-        Optional<Gamer> obj = gamerService.findById(id);
-        if (obj.isPresent()) {
-            return ResponseEntity.ok(obj.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @Operation(summary = "Buscar gamer por ID")
+    public ResponseEntity<Gamer> getById(@PathVariable Long id) {
+        Optional<Gamer> gamer = service.findById(id);
+        return gamer.map(ResponseEntity::ok).orElse(notFound().build());
     }
 
     @PostMapping
-    @Operation(summary = "Criar um novo gamer", description = "Registra um novo gamer no sistema.")
-    public ResponseEntity<Gamer> createGamer(@RequestBody Gamer gamer) {
-        Gamer newGamer = gamerService.save(gamer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newGamer);
+    @Operation(summary = "Criar novo gamer")
+    public ResponseEntity<Gamer> create(@RequestBody Gamer gamer) {
+        return status(HttpStatus.CREATED).body(service.save(gamer));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar um gamer existente", description = "Atualiza as informações de um gamer específico com base no seu ID.")
-    public ResponseEntity<Gamer> updateGamer(@PathVariable Long id, @RequestBody Gamer gamerDetails) {
+    @Operation(summary = "Atualizar gamer")
+    public ResponseEntity<Gamer> update(@PathVariable Long id, @RequestBody Gamer details) {
         try {
-            Gamer updatedGamer = gamerService.update(id, gamerDetails);
-            return ResponseEntity.ok(updatedGamer);
+            return ok(service.update(id, details));
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar um gamer", description = "Remove um gamer específico do sistema com base no seu ID.")
-    public ResponseEntity<Void> deleteGamer(@PathVariable Long id) {
-        boolean deleted = gamerService.deleteById(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @Operation(summary = "Deletar gamer")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (service.deleteById(id)) {
+            return noContent().build();
         }
+        return notFound().build();
     }
 
-    // --- OPERAÇÕES ESPECÍFICAS PARA BIBLIOTECA DE JOGOS ---
-
     @PutMapping("/{gamerId}/biblioteca/{jogoId}")
-    @Operation(summary = "Adicionar jogo à biblioteca do gamer", description = "Associa um jogo específico à biblioteca de um gamer.")
-    public ResponseEntity<Gamer> adicionarJogoBiblioteca(@PathVariable Long gamerId, @PathVariable Long jogoId) {
+    @Operation(summary = "Adicionar jogo à biblioteca do gamer")
+    public ResponseEntity<Gamer> adicionarJogo(@PathVariable Long gamerId, @PathVariable Long jogoId) {
         try {
-            Gamer updatedGamer = gamerService.adicionarJogo(gamerId, jogoId);
-            return ResponseEntity.ok(updatedGamer);
+            return ok(service.adicionarJogo(gamerId, jogoId));
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return notFound().build();
         }
     }
 
     @DeleteMapping("/{gamerId}/biblioteca/{jogoId}")
-    @Operation(summary = "Remover jogo da biblioteca do gamer", description = "Desassocia um jogo específico da biblioteca de um gamer.")
-    public ResponseEntity<Gamer> removerJogoBiblioteca(@PathVariable Long gamerId, @PathVariable Long jogoId) {
+    @Operation(summary = "Remover jogo da biblioteca do gamer")
+    public ResponseEntity<Gamer> removerJogo(@PathVariable Long gamerId, @PathVariable Long jogoId) {
         try {
-            Gamer updatedGamer = gamerService.removerJogo(gamerId, jogoId);
-            return ResponseEntity.ok(updatedGamer);
+            return ok(service.removerJogo(gamerId, jogoId));
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return notFound().build();
         }
     }
 }

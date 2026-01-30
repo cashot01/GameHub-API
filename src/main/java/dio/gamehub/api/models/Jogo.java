@@ -18,34 +18,28 @@ public class Jogo {
     @Column(nullable = false)
     private String titulo;
 
-    @Column(length = 2000) // Texto longo para descrição
+    @Column(length = 2000)
     private String descricao;
 
-    @Column(precision = 10, scale = 2) // Preço com 2 casas decimais
+    @Column(precision = 10, scale = 2)
     private BigDecimal preco;
 
-    @Column(name = "genero")
-    private String genero; // Ex: "Ação", "RPG", "Estratégia"
+    @Column
+    private String genero;
 
-    @Column(name = "data_lancamento") // Nome da coluna com underline
+    @Column(name = "data_lancamento")
     private LocalDate dataLancamento;
 
     @Column(name = "classificacao_etaria")
-    private String classificacaoEtaria; // Ex: "L", "10+", "16+", "18+"
+    private String classificacaoEtaria;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "desenvolvedora_id") // Chave estrangeira
-    private Desenvolvedora desenvolvedora;
+    @Column
+    private String desenvolvedora; // ex: "FromSoftware"
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "jogo_plataforma",
-            joinColumns = @JoinColumn(name = "jogo_id"),
-            inverseJoinColumns = @JoinColumn(name = "plataforma_id")
-    )
-    private List<Plataforma> plataformas = new ArrayList<>();
+    @Column
+    private String plataformas; // ex: "PC, PlayStation 5, Xbox Series X"
 
-    public Jogo(Long id, String titulo, String descricao, BigDecimal preco, String genero, LocalDate dataLancamento, String classificacaoEtaria, Desenvolvedora desenvolvedora, List<Plataforma> plataformas) {
+    public Jogo(Long id, String titulo, String descricao, BigDecimal preco, String genero, LocalDate dataLancamento, String classificacaoEtaria, String desenvolvedora, String plataformas) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
@@ -113,19 +107,19 @@ public class Jogo {
         this.classificacaoEtaria = classificacaoEtaria;
     }
 
-    public Desenvolvedora getDesenvolvedora() {
+    public String getDesenvolvedora() {
         return desenvolvedora;
     }
 
-    public void setDesenvolvedora(Desenvolvedora desenvolvedora) {
+    public void setDesenvolvedora(String desenvolvedora) {
         this.desenvolvedora = desenvolvedora;
     }
 
-    public List<Plataforma> getPlataformas() {
+    public String getPlataformas() {
         return plataformas;
     }
 
-    public void setPlataformas(List<Plataforma> plataformas) {
+    public void setPlataformas(String plataformas) {
         this.plataformas = plataformas;
     }
 }

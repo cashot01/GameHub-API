@@ -9,8 +9,6 @@ public interface JogoService {
     List<Jogo> findAll();
     Optional<Jogo> findById(Long id);
     Jogo save(Jogo jogo);
-    Jogo update(Long id, Jogo details);
+    Jogo update(Long id, Jogo jogoDetails);
     boolean deleteById(Long id);
-    List<Jogo> findByGenero(String genero);
-    List<Jogo> findByDesenvolvedoraId(Long devId);
 }

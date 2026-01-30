@@ -33,7 +33,6 @@ public class GamerServiceImpl implements GamerService {
 
     @Override
     public Gamer save(Gamer gamer) {
-        // Garante que IDs gerados automaticamente não sejam sobrescritos
         gamer.setId(null);
         return gamerRepository.save(gamer);
     }
@@ -41,17 +40,11 @@ public class GamerServiceImpl implements GamerService {
     @Override
     @Transactional
     public Gamer update(Long id, Gamer gamerDetails) {
-        Gamer existingGamer = gamerRepository.findById(id)
+        Gamer existing = gamerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Gamer não encontrado com ID: " + id));
-
-        // Atualiza campos básicos
-        existingGamer.setNome(gamerDetails.getNome());
-        existingGamer.setConta(gamerDetails.getConta());
-        existingGamer.setCartao(gamerDetails.getCartao());
-        existingGamer.setPreferencias(gamerDetails.getPreferencias());
-        existingGamer.setNoticias(gamerDetails.getNoticias()); // Atenção: isso substitui a noticia inteira
-
-        return gamerRepository.save(existingGamer);
+        existing.setNome(gamerDetails.getNome());
+        // Não atualizamos bibliotecaJogos aqui para evitar sobrescrita acidental
+        return gamerRepository.save(existing);
     }
 
     @Override
@@ -68,7 +61,6 @@ public class GamerServiceImpl implements GamerService {
     public Gamer adicionarJogo(Long gamerId, Long jogoId) {
         Gamer gamer = gamerRepository.findById(gamerId)
                 .orElseThrow(() -> new RuntimeException("Gamer não encontrado com ID: " + gamerId));
-
         Jogo jogo = jogoRepository.findById(jogoId)
                 .orElseThrow(() -> new RuntimeException("Jogo não encontrado com ID: " + jogoId));
 
@@ -81,7 +73,6 @@ public class GamerServiceImpl implements GamerService {
     public Gamer removerJogo(Long gamerId, Long jogoId) {
         Gamer gamer = gamerRepository.findById(gamerId)
                 .orElseThrow(() -> new RuntimeException("Gamer não encontrado com ID: " + gamerId));
-
         Jogo jogo = jogoRepository.findById(jogoId)
                 .orElseThrow(() -> new RuntimeException("Jogo não encontrado com ID: " + jogoId));
 
